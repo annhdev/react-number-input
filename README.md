@@ -1,5 +1,9 @@
 # React Number Input
 
+[![npm](https://img.shields.io/npm/v/react-currency-number-input)](https://www.npmjs.com/package/react-currency-number-input)
+[![npm](https://img.shields.io/npm/dm/react-currency-number-input)](https://www.npmjs.com/package/react-currency-number-input)
+[![NPM](https://img.shields.io/npm/l/react-currency-number-input)](https://www.npmjs.com/package/react-currency-number-input)
+
 React component INPUT currency and numbers.
 
 ## Features
