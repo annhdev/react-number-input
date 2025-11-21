@@ -4,7 +4,7 @@ import { type ChangeEvent, type FocusEvent, type InputHTMLAttributes, type Keybo
 export interface NumberInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value'> {
     /** Current value (raw number string or number). */
     value: string | number | null
-    /** Callback with the raw numeric value (no separators). */
+    /** Callback with the raw numeric value (no separators) and formatted string. */
     onValueChange: (value: number, formated: string) => void
 
     /** Thousand separator – default “,” */
