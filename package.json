@@ -1,7 +1,7 @@
 {
-    "name": "react-number-input",
+    "name": "react-currency-number-input",
     "description": "A customizable and accessible number input component for React applications.",
-    "keywords": ["react", "number input", "component", "accessible", "customizable"],
+    "keywords": ["react", "number input", "currency input", "component", "accessible", "customizable"],
     "author": {
         "name": "annhdev",
         "email": "annh.dev@gmail.com"
@@ -15,7 +15,6 @@
     "bugs": {
         "url": "https://github.com/annhdev/react-number-input/issues"
     },
-    "private": true,
     "version": "1.0.0",
     "type": "module",
     "files": [

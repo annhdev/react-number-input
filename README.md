@@ -12,6 +12,9 @@ React component INPUT currency and numbers.
 - Easy to use with React
 - Lightweight and fast
 
+## Demo
+You can see a live demo of the component [here](https://annhdev.github.io/react-number-input/).
+
 ## Installation
 
 ```bash
