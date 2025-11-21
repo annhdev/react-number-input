@@ -39,11 +39,13 @@ const App = () => {
       <h1>React Number Input Example</h1>
       <NumberInput
         value={value}
-        onChange={setValue}
-        currency="USD"
-        decimalScale={2}
-        fixedDecimalScale={true}
-        thousandSeparator={true}
+        onValueChange={(value, formatted) => setValue(value)}
+        decimalLimit={2}
+        thousandSeparator={','}
+        decimalSeparator={'.'}
+        allowNegative={true}
+        placeholder="Enter a number"
+        step={1}
       />
       <p>Current Value: {value}</p>
     </div>
