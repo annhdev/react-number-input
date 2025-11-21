@@ -3,9 +3,10 @@ import { type ChangeEvent, type FocusEvent, type InputHTMLAttributes, type Keybo
 
 export interface NumberInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value'> {
     /** Current value (raw number string or number). */
-    value: string | number | null
+    value?: string | number | null
     /** Callback with the raw numeric value (no separators) and formatted string. */
-    onValueChange: (value: number, formated: string) => void
+    onValueChange?: (value: number, formated: string) => void
+    onChange?: (e: ChangeEvent<HTMLInputElement>) => void
 
     /** Thousand separator – default “,” */
     thousandSeparator?: string
@@ -33,7 +34,7 @@ export interface NumberInputProps extends Omit<InputHTMLAttributes<HTMLInputElem
     [key: string]: any
 }
 
-export const NumberInput = ({ id, name, value = '', onValueChange, thousandSeparator = ',', decimalSeparator = '.', decimalLimit = 2, allowNegative, placeholder, className, min, max, step = 1, ...rest }: NumberInputProps) => {
+export const NumberInput = ({ id, name, value = '', onValueChange, onChange, thousandSeparator = ',', decimalSeparator = '.', decimalLimit = 2, allowNegative, placeholder, className, min, max, step = 1, ...rest }: NumberInputProps) => {
     const inputRef = useRef<HTMLInputElement>(null)
     const [displayValue, setDisplayValue] = useState<string>('')
 
@@ -145,10 +146,10 @@ export const NumberInput = ({ id, name, value = '', onValueChange, thousandSepar
             const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator)
 
             if (parsed.endsWith(decimalSeparator) || parsed.endsWith(`${decimalSeparator}0`)) {
-                return { raw: parseFloat(`${intPart}${decimalSeparator}${fracPart}`), formated: `${formattedInt}${decimalSeparator}${fracPart}` }
+                return { raw: parseFloat(`${intPart}.${fracPart}`), formated: `${formattedInt}${decimalSeparator}${fracPart}` }
             }
 
-            return fracPart ? { raw: parseFloat(`${intPart}${decimalSeparator}${fracPart}`), formated: `${formattedInt}${decimalSeparator}${fracPart}` } : { raw: parseFloat(intPart), formated: formattedInt }
+            return fracPart ? { raw: parseFloat(`${intPart}.${fracPart}`), formated: `${formattedInt}${decimalSeparator}${fracPart}` } : { raw: parseFloat(intPart), formated: formattedInt }
         },
         [parseInput, escapeRegExp, thousandSeparator, decimalSeparator, allowNegative, decimalLimit]
     )
@@ -157,16 +158,17 @@ export const NumberInput = ({ id, name, value = '', onValueChange, thousandSepar
         setDisplayValue(formatValue(value?.toString() || '').formated)
     }, [formatValue, value])
 
-    const handleInput = (_e: ChangeEvent<HTMLInputElement>) => {
-        const rawValue = _e.target.value
+    const handleInput = (e: ChangeEvent<HTMLInputElement>) => {
+        const rawValue = e.target.value
         // current cursor position
-        const cursorPos = _e.target.selectionStart || 0
+        const cursorPos = e.target.selectionStart || 0
 
         // format the value
         const formattedValue = formatValue(rawValue)
 
         setDisplayValue(formattedValue.formated)
-        onValueChange(formattedValue.raw, formattedValue.formated)
+        if(onValueChange) onValueChange(formattedValue.raw, formattedValue.formated)
+        if(onChange) onChange(e)
 
         // adjust cursor position
         setTimeout(() => {
@@ -195,11 +197,9 @@ export const NumberInput = ({ id, name, value = '', onValueChange, thousandSepar
             if (min !== undefined) next = Math.max(next, min)
             if (max !== undefined) next = Math.min(next, max)
 
-            console.log(next)
-
             const formattedNext = formatValue(next)
             setDisplayValue(formattedNext.formated)
-            onValueChange(formattedNext.raw, formattedNext.formated)
+            if(onValueChange) onValueChange(formattedNext.raw, formattedNext.formated)
             // `useEffect` will update `display` automatically
         }
     }
