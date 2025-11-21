@@ -1,0 +1,1 @@
+import{i as e}from"./iframe-BH6JquWL.js";var t=e(e=>`control-${e.replace(/\s+/g,`-`)}`,`getControlId`),n=e(e=>`set-${e.replace(/\s+/g,`-`)}`,`getControlSetterButtonId`);export{n,t};

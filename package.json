@@ -34,7 +34,7 @@
         "stylelint": "stylelint **/*.css",
         "stylelint:fix": "stylelint **/*.css --fix",
         "storybook": "storybook dev -p 6006",
-        "build-storybook": "storybook build",
+        "build-storybook": "storybook build -o examples",
         "test": "vitest",
         "test:ui": "vitest --ui",
         "coverage": "vitest run --coverage",
