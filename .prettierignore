@@ -1,0 +1,14 @@
+# Ignore artifacts:
+build
+coverage
+.idea
+dist
+logs
+node_modules
+
+# Ignore all HTML files:
+**/*.html
+**/*.log
+
+package.json
+package-lock.json

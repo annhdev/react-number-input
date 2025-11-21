@@ -1,0 +1,6 @@
+@import "./theme.css";
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *, [data-mode="dark"], [data-mode="dark"] *));
+@custom-variant gray (&:where(.dark, .dark *, [data-mode="gray"], [data-mode="gray"] *));
+@custom-variant blue (&:where(.dark, .dark *, [data-mode="blue"], [data-mode="blue"] *));
