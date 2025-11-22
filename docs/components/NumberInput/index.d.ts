@@ -27,5 +27,5 @@ export interface NumberInputProps extends Omit<InputHTMLAttributes<HTMLInputElem
     /** any other standard <input> props can be forwarded via `...rest` */
     [key: string]: any;
 }
-declare const NumberInput: ({ id, name, value, onValueChange, onChange, thousandSeparator, decimalSeparator, decimalLimit, allowNegative, placeholder, className, min, max, step, ...rest }: NumberInputProps) => import("react/jsx-runtime").JSX.Element;
+export declare const NumberInput: ({ id, name, value, onValueChange, onChange, thousandSeparator, decimalSeparator, decimalLimit, allowNegative, placeholder, className, min, max, step, ...rest }: NumberInputProps) => import("react/jsx-runtime").JSX.Element;
 export default NumberInput;

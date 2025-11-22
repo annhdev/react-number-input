@@ -1,5 +1,5 @@
 import { type InputHTMLAttributes, useState } from 'react'
-import NumberInput from '../../components/NumberInput'
+import { NumberInput } from '../../components/NumberInput'
 
 export interface NumberInputPreviewProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value'> {
     /** Current value (raw number string or number). */

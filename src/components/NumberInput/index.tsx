@@ -34,7 +34,7 @@ export interface NumberInputProps extends Omit<InputHTMLAttributes<HTMLInputElem
     [key: string]: any
 }
 
-const NumberInput = ({ id, name, value, onValueChange, onChange, thousandSeparator = ',', decimalSeparator = '.', decimalLimit = 2, allowNegative, placeholder, className, min, max, step = 1, ...rest }: NumberInputProps) => {
+export const NumberInput = ({ id, name, value, onValueChange, onChange, thousandSeparator = ',', decimalSeparator = '.', decimalLimit = 2, allowNegative, placeholder, className, min, max, step = 1, ...rest }: NumberInputProps) => {
     const inputRef = useRef<HTMLInputElement>(null)
     const [displayValue, setDisplayValue] = useState<string>('')
     const safeDecimalLimit = Math.min(Math.max(decimalLimit, 0), 15)

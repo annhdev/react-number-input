@@ -1,14 +1,14 @@
 import {cleanup, render, screen, fireEvent} from '@testing-library/react'
 import {afterEach, describe, it, expect} from 'vitest'
-import {NumberInput} from '../components/NumberInput'
+import { NumberInput } from '../components/NumberInput'
 
 describe('NumberInput test:', () => {
     afterEach(cleanup)
 
     // state to hold the value
-    let price: number | null = 1233.456
+    let price: string = '1233.456'
 
-    const setPrice = (value: number | null) => {
+    const setPrice = (value: string) => {
         price = value
     }
 
@@ -18,8 +18,8 @@ describe('NumberInput test:', () => {
             role={'textbox'}
             aria-label="Number input"
             value={price}
-            onValueChange={(value, formated) => {
-                console.log(`value: ${value}, formated: ${formated}`)
+            onValueChange={(value, num: number, formated) => {
+                console.log(`value: ${value}, num: ${num}, formated: ${formated}`)
                 setPrice(value)
             }}
             decimalLimit={3}
