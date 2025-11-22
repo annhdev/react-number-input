@@ -153,11 +153,6 @@ export const NumberInput = ({ id, name, value, onValueChange, onChange, thousand
             // split at the first decimal separator
             const parts = cleaned.split(decimalSeparator)
             let intPart = parts[0]
-            let fracPart = parts[1] ?? ''
-
-            if (parseInt(fracPart) === 0) {
-                fracPart = ''
-            }
 
             // handle negative sign
             if (allowNegative && intPart.startsWith('-')) {
@@ -172,6 +167,12 @@ export const NumberInput = ({ id, name, value, onValueChange, onChange, thousand
                 intPart = '0'
             }
 
+            let fracPart = parts[1] ?? ''
+
+            if (parseInt(fracPart) === 0) {
+                fracPart = ''
+            }
+
             // keep only digits
             fracPart = fracPart.replace(/\D/g, '').slice(0, safeDecimalLimit)
 
@@ -179,18 +180,27 @@ export const NumberInput = ({ id, name, value, onValueChange, onChange, thousand
             const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator)
             const finalRawValue = fracPart && fracPart.length > 0 ? `${intPart}.${fracPart}` : intPart ? intPart : '0'
             const finalNumber = new Decimal(finalRawValue).toNumber()
+            const formattedString = fracPart && fracPart.length > 0 ? `${formattedInt ? formattedInt : '0'}${decimalSeparator}${fracPart}` : formattedInt
+
+            // handle min/max overflow
+            if (min !== undefined && finalNumber < min) {
+                return { raw: min.toFixed(), num: min, formated: min.toFixed() }
+            }
+            if (max !== undefined && finalNumber > max) {
+                return { raw: max.toFixed(), num: max, formated: max.toFixed() }
+            }
 
             if (finalNumber > new Decimal(`1e${Decimal.maxE - decimalPlaces}`).toNumber() || finalNumber < new Decimal(`-1e${Decimal.maxE - decimalPlaces}`).toNumber() || finalNumber === Infinity || finalNumber === -Infinity) {
                 return { raw: '', num: Infinity, formated: '' }
             }
 
             if (parsed.endsWith(decimalSeparator) || parsed.endsWith(`${decimalSeparator}0`)) {
-                return { raw: finalRawValue, num: finalNumber, formated: `${formattedInt}${decimalSeparator}${fracPart}` }
+                return { raw: finalRawValue, num: finalNumber, formated: formattedString }
             }
 
-            return fracPart && fracPart.length > 0 ? { raw: finalRawValue, num: finalNumber, formated: `${formattedInt ? formattedInt : '0'}${decimalSeparator}${fracPart}` } : { raw: finalRawValue, num: finalNumber, formated: formattedInt }
+            return { raw: finalRawValue, num: finalNumber, formated: formattedString }
         },
-        [getDecimalPlaces, parseInput, escapeRegExp, thousandSeparator, decimalSeparator, allowNegative, safeDecimalLimit]
+        [getDecimalPlaces, safeDecimalLimit, parseInput, escapeRegExp, thousandSeparator, decimalSeparator, allowNegative, min, max]
     )
 
     useEffect(() => {
@@ -259,6 +269,7 @@ export const NumberInput = ({ id, name, value, onValueChange, onChange, thousand
 
             setDisplayValue(formattedNext.formated)
             if (onValueChange) onValueChange(formattedNext.raw, formattedNext.num, formattedNext.formated)
+            // `useEffect` will update `display` automatically
         }
     }
 

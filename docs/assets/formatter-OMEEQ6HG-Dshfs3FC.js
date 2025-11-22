@@ -1,1 +1,0 @@
-import{d as e,u as t,v as n}from"./iframe-BamB3IgB.js";var r=(0,n(e(),1).default)(2)(async(e,n)=>e===!1?n:t(n));export{r as formatter};

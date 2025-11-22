@@ -18,7 +18,7 @@ describe('NumberInput test:', () => {
             role={'textbox'}
             aria-label="Number input"
             value={price}
-            onValueChange={(value, num: number, formated) => {
+            onValueChange={(value:string, num: number, formated:string) => {
                 console.log(`value: ${value}, num: ${num}, formated: ${formated}`)
                 setPrice(value)
             }}
