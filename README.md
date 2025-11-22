@@ -27,19 +27,19 @@ npm install react-number-input
 
 ## Usage
 
-```jsx
+```tsx
 import React, { useState } from 'react';
 import NumberInput from 'react-number-input';
 
 const App = () => {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState('1e6');
 
   return (
     <div>
       <h1>React Number Input Example</h1>
       <NumberInput
         value={value}
-        onValueChange={(value, formatted) => setValue(value)}
+        onValueChange={(value: string, num: number, formatted: string) => setValue(value)}
         decimalLimit={2}
         thousandSeparator={','}
         decimalSeparator={'.'}
@@ -75,9 +75,10 @@ export default App;
 Handle changes to the value.
 
 ```js
-    onValueChange = (value, formated) => void;
+    onValueChange = (value, num, formated) => void;
 ```
 - `value`: The raw numeric value (e.g., `1234.56`).
+- `num`: The numeric value as a number type (e.g., 1234.56).
 - `formated`: The formatted string value (e.g., `"1,234.56"`).
 
 ### decimalLimit
