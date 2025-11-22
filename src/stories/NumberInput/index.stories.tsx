@@ -39,7 +39,7 @@ type Story = StoryObj<typeof meta>
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {
     args: {
-        value: 1000,
+        value: '1e8',
         thousandSeparator: ',',
         decimalSeparator: '.',
         decimalLimit: 2,

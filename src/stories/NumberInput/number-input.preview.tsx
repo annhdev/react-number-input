@@ -1,11 +1,11 @@
 import { type InputHTMLAttributes, useState } from 'react'
-import { NumberInput } from '../../components/NumberInput'
+import NumberInput from '../../components/NumberInput'
 
 export interface NumberInputPreviewProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value'> {
     /** Current value (raw number string or number). */
-    value: string | number | null
+    value?: string
     /** Callback with the raw numeric value (no separators). */
-    onValueChange: (value: number, formated: string) => void
+    onValueChange: (value: string, num: number, formated: string) => void
 
     /** Thousand separator – default “,” */
     thousandSeparator?: string
@@ -36,11 +36,11 @@ export interface NumberInputPreviewProps extends Omit<InputHTMLAttributes<HTMLIn
 
 const NumberInputPreview = ({ id, name, value = '', onValueChange, thousandSeparator = ',', decimalSeparator = '.', decimalLimit = 2, allowNegative, placeholder, className, min, max, step = 1, ...rest }:NumberInputPreviewProps) => {
     
-    const [price, setPrice] =  useState<number | null>(value as number | null);
+    const [price, setPrice] =  useState<string>(value);
 
-    const handleValueChange = (val: number, formatted: string) => {
+    const handleValueChange = (val: string, num: number, formatted: string) => {
         setPrice(val);
-        onValueChange(val, formatted);
+        onValueChange(val, num, formatted);
     }
     
     return <NumberInput

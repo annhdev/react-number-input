@@ -1,9 +1,10 @@
-import { InputHTMLAttributes } from '../../../node_modules/react';
+import { ChangeEvent, InputHTMLAttributes } from '../../../node_modules/react';
 export interface NumberInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value'> {
     /** Current value (raw number string or number). */
-    value: string | number | null;
+    value?: string | number;
     /** Callback with the raw numeric value (no separators). */
-    onValueChange: (value: number, formated: string) => void;
+    onValueChange?: (value: string, num: number, formated: string) => void;
+    onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
     /** Thousand separator – default “,” */
     thousandSeparator?: string;
     /** Decimal separator – default “.” */
@@ -26,4 +27,5 @@ export interface NumberInputProps extends Omit<InputHTMLAttributes<HTMLInputElem
     /** any other standard <input> props can be forwarded via `...rest` */
     [key: string]: any;
 }
-export declare const NumberInput: ({ id, name, value, onValueChange, thousandSeparator, decimalSeparator, decimalLimit, allowNegative, placeholder, className, min, max, step, ...rest }: NumberInputProps) => import("react/jsx-runtime").JSX.Element;
+declare const NumberInput: ({ id, name, value, onValueChange, onChange, thousandSeparator, decimalSeparator, decimalLimit, allowNegative, placeholder, className, min, max, step, ...rest }: NumberInputProps) => import("react/jsx-runtime").JSX.Element;
+export default NumberInput;
