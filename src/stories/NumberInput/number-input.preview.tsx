@@ -1,5 +1,6 @@
 import { type InputHTMLAttributes, useState } from 'react'
 import { NumberInput } from '../../components/NumberInput'
+import { Decimal } from 'decimal.js'
 
 export interface NumberInputPreviewProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value'> {
     /** Current value (raw number string or number). */
@@ -36,11 +37,11 @@ export interface NumberInputPreviewProps extends Omit<InputHTMLAttributes<HTMLIn
 
 const NumberInputPreview = ({ id, name, value = '', onValueChange, thousandSeparator = ',', decimalSeparator = '.', decimalLimit = 2, allowNegative, placeholder, className, min, max, step = 1, ...rest }:NumberInputPreviewProps) => {
     
-    const [price, setPrice] =  useState<string>(value);
+    const [price, setPrice] = useState<number>(new Decimal(value).toNumber() || 0)
 
     const handleValueChange = (val: string, num: number, formatted: string) => {
-        setPrice(val);
-        onValueChange(val, num, formatted);
+        setPrice(num)
+        onValueChange(val, num, formatted)
     }
     
     return <NumberInput

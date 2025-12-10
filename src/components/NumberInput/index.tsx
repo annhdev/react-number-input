@@ -86,7 +86,7 @@ export const NumberInput = ({ id, name, value, onValueChange, onChange, thousand
 
     // parse input to handle abbreviations
     const parseInput = useCallback(
-        function parse(raw: string | number): string {
+        (raw: string | number): string => {
             const stripped = typeof raw === 'number' ? new Decimal(raw).toFixed() : raw.trim()
 
             const escapedThousandSeparator = escapeRegExp(thousandSeparator)
@@ -94,7 +94,7 @@ export const NumberInput = ({ id, name, value, onValueChange, onChange, thousand
 
             // handle negative sign
             if (allowNegative && stripped.startsWith('-')) {
-                return '-' + parse(stripped.slice(1))
+                return '-' + parseInput(stripped.slice(1))
             }
 
             const stringRegex = `^([+-]?)(([0-9${escapedThousandSeparator}]*)([${escapedDecimalSeparator}])?([0-9]+)?)([kKmMbBtT])?`
@@ -130,75 +130,84 @@ export const NumberInput = ({ id, name, value, onValueChange, onChange, thousand
     // Raw: "1234.56" Formatted: "1,234.56"
     const formatValue = useCallback(
         (raw: string | number, isInit = false): { raw: string; num: number; formated: string } => {
-            let stripped = typeof raw === 'number' ? new Decimal(raw).toFixed() : raw.trim()
-            if (stripped.indexOf('e') !== -1 || stripped.indexOf('E') !== -1) {
-                stripped = new Decimal(stripped).toFixed()
-            }
+            try {
+                let stripped = typeof raw === 'number' ? new Decimal(raw).toFixed() : raw.trim()
 
-            const decimalPlaces = getDecimalPlaces(stripped, isInit)
-            if (decimalPlaces > safeDecimalLimit) {
-                stripped = new Decimal(stripped).toFixed(safeDecimalLimit)
-            }
+                if (stripped.indexOf('e') !== -1 || stripped.indexOf('E') !== -1) {
+                    stripped = new Decimal(stripped).toFixed()
+                }
 
-            if (isInit) {
-                stripped = stripped.replace('.', decimalSeparator)
-            }
+                const decimalPlaces = getDecimalPlaces(stripped, isInit)
+                if (decimalPlaces > safeDecimalLimit) {
+                    stripped = new Decimal(stripped).toFixed(safeDecimalLimit)
+                }
 
-            const parsed = parseInput(stripped)
-            const escapedThousandSeparator = escapeRegExp(thousandSeparator)
+                if (isInit) {
+                    stripped = stripped.replace('.', decimalSeparator)
+                }
 
-            const sepRegex = new RegExp(escapedThousandSeparator, 'g')
-            const cleaned = parsed.replace(sepRegex, '')
+                const parsed = parseInput(stripped)
+                const escapedThousandSeparator = escapeRegExp(thousandSeparator)
 
-            // split at the first decimal separator
-            const parts = cleaned.split(decimalSeparator)
-            let intPart = parts[0]
+                const sepRegex = new RegExp(escapedThousandSeparator, 'g')
+                const cleaned = parsed.replace(sepRegex, '')
 
-            // handle negative sign
-            if (allowNegative && intPart.startsWith('-')) {
-                // keep sign and only digits
-                intPart = '-' + intPart.slice(1).replace(/\D/g, '')
-            } else {
+                // split at the first decimal separator
+                const parts = cleaned.split(decimalSeparator)
+                let intPart = parts[0]
+
+                // handle negative sign
+                if (allowNegative && intPart.startsWith('-')) {
+                    // keep sign and only digits
+                    intPart = '-' + intPart.slice(1).replace(/\D/g, '')
+                } else {
+                    // keep only digits
+                    intPart = intPart.replace(/\D/g, '')
+                }
+
+                if (parseInt(intPart) === 0) {
+                    if (allowNegative && intPart.startsWith('-')) {
+                        intPart = '-0'
+                    } else {
+                        intPart = '0'
+                    }
+                }
+
+                let fracPart = parts[1] ?? ''
+
+                if (parseInt(fracPart) === 0) {
+                    fracPart = ''
+                }
+
                 // keep only digits
-                intPart = intPart.replace(/\D/g, '')
-            }
+                fracPart = fracPart.replace(/\D/g, '').slice(0, safeDecimalLimit)
 
-            if (parseInt(intPart) === 0) {
-                intPart = '0'
-            }
+                // format integer part with thousand separators
+                const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator)
+                const finalRawValue = fracPart && fracPart.length > 0 ? `${intPart}.${fracPart}` : intPart ? intPart : '0'
+                const finalNumber = new Decimal(finalRawValue).toNumber()
+                const formattedString = fracPart && fracPart.length > 0 ? `${formattedInt ? formattedInt : '0'}${decimalSeparator}${fracPart}` : formattedInt
 
-            let fracPart = parts[1] ?? ''
+                // handle min/max overflow
+                if (min !== undefined && finalNumber < min) {
+                    return { raw: min.toFixed(), num: min, formated: min.toFixed() }
+                }
+                if (max !== undefined && finalNumber > max) {
+                    return { raw: max.toFixed(), num: max, formated: max.toFixed() }
+                }
 
-            if (parseInt(fracPart) === 0) {
-                fracPart = ''
-            }
+                if (finalNumber > new Decimal(`1e${Decimal.maxE - decimalPlaces}`).toNumber() || finalNumber < new Decimal(`-1e${Decimal.maxE - decimalPlaces}`).toNumber() || finalNumber === Infinity || finalNumber === -Infinity) {
+                    return { raw: '', num: Infinity, formated: '' }
+                }
 
-            // keep only digits
-            fracPart = fracPart.replace(/\D/g, '').slice(0, safeDecimalLimit)
+                if (parsed.endsWith(decimalSeparator) || parsed.endsWith(`${decimalSeparator}0`)) {
+                    return { raw: finalRawValue, num: finalNumber, formated: formattedString }
+                }
 
-            // format integer part with thousand separators
-            const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator)
-            const finalRawValue = fracPart && fracPart.length > 0 ? `${intPart}.${fracPart}` : intPart ? intPart : '0'
-            const finalNumber = new Decimal(finalRawValue).toNumber()
-            const formattedString = fracPart && fracPart.length > 0 ? `${formattedInt ? formattedInt : '0'}${decimalSeparator}${fracPart}` : formattedInt
-
-            // handle min/max overflow
-            if (min !== undefined && finalNumber < min) {
-                return { raw: min.toFixed(), num: min, formated: min.toFixed() }
-            }
-            if (max !== undefined && finalNumber > max) {
-                return { raw: max.toFixed(), num: max, formated: max.toFixed() }
-            }
-
-            if (finalNumber > new Decimal(`1e${Decimal.maxE - decimalPlaces}`).toNumber() || finalNumber < new Decimal(`-1e${Decimal.maxE - decimalPlaces}`).toNumber() || finalNumber === Infinity || finalNumber === -Infinity) {
-                return { raw: '', num: Infinity, formated: '' }
-            }
-
-            if (parsed.endsWith(decimalSeparator) || parsed.endsWith(`${decimalSeparator}0`)) {
                 return { raw: finalRawValue, num: finalNumber, formated: formattedString }
+            } catch {
+                throw new Error('Invalid number format')
             }
-
-            return { raw: finalRawValue, num: finalNumber, formated: formattedString }
         },
         [getDecimalPlaces, safeDecimalLimit, parseInput, escapeRegExp, thousandSeparator, decimalSeparator, allowNegative, min, max]
     )
@@ -215,6 +224,28 @@ export const NumberInput = ({ id, name, value, onValueChange, onChange, thousand
         // current cursor position
         const cursorPos = e.target.selectionStart || 0
 
+        if (inputValue === '-' && allowNegative) {
+            setDisplayValue(inputValue)
+            return
+        }
+
+        if (inputValue.endsWith(decimalSeparator)) {
+            setDisplayValue(inputValue)
+            return
+        }
+
+        if (inputValue.endsWith(`${decimalSeparator}0`)) {
+            setDisplayValue(inputValue)
+            return
+        }
+
+        if (inputValue === '') {
+            setDisplayValue('')
+            if (onValueChange) onValueChange('', NaN, '')
+            if (onChange) onChange(e)
+            return
+        }
+
         // format the value
         const formattedValue = formatValue(inputValue)
 
@@ -229,6 +260,9 @@ export const NumberInput = ({ id, name, value, onValueChange, onChange, thousand
             if (inputRef.current) {
                 let newCursorPos = cursorPos + (formattedValue.formated.length - inputValue.length)
                 newCursorPos = Math.max(0, Math.min(newCursorPos, formattedValue.formated.length))
+                if (inputValue.startsWith('-.') || inputValue.startsWith('.')) {
+                    newCursorPos += 1
+                }
                 inputRef.current.setSelectionRange(newCursorPos, newCursorPos)
             }
         }, 0)
